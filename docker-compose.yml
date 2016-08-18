@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  db:
+    image: bitnami/postgresql:latest
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=app_development
+  backend:
+    build: .
+    command: rails s --binding=0.0.0.0
+    entrypoint: ./scripts/entrypoint.sh
+    links:
+      - db
+      - frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - frontend
+  frontend:
+    build: ./client
+    command: npm run dev
+    entrypoint: ./scripts/entrypoint.sh
+    volumes:
+      - ./:/app
+    ports:
+      - 8080:8080
+    environment:
+      NODE_ENV: development

@@ -1,0 +1,42 @@
+{
+  "name": "docker-react-redux-boilerplate",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "webpack --config ./webpack-prod.config.js --progress --profile --colors --optimize-minimize --optimize-dedupe && cp -R src/static/ dist/static",
+    "start": "npm run build && node server.js",
+    "dev": "webpack --colors && webpack-dev-server --progress --colors --host=0.0.0.0 --content-base",
+    "test": "echo \"No unit tests and e2e tests yet\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.4",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.6.1",
+    "redux": "^3.5.2",
+    "redux-promise-middleware": "^3.3.2",
+    "whatwg-fetch": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel": "^6.5.0",
+    "babel-core": "^6.7.7",
+    "babel-loader": "^6.2.4",
+    "babel-polyfill": "^6.7.4",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "css-loader": "^0.23.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.5",
+    "html-webpack-plugin": "^2.16.1",
+    "node-sass": "^3.6.0",
+    "react-hot-loader": "^1.3.0",
+    "react-rangeslider": "^1.0.2",
+    "react-router": "^2.4.0",
+    "sass-loader": "^3.2.0",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  }
+}

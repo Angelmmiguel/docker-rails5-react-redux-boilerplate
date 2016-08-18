@@ -1,0 +1,7 @@
+# Ignore
+/node_modules
+.npm-debug*
+/dist/*.js
+/dist/*.css
+/dist/static/
+/dist/index.html
