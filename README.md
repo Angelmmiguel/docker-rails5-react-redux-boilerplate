@@ -11,3 +11,6 @@ docker-compose up -d
 ```
 
 After the containers finish the initialization, you can go to [http://localhost:3000](http://localhost:3000)
+
+![boilerplate](https://cloud.githubusercontent.com/assets/4056725/17791203/5d0acad6-659a-11e6-9b33-411e5fc0746f.png)
+
