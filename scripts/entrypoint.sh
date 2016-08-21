@@ -11,9 +11,7 @@ echo -e "\nChecking gems"
 bundle install --quiet
 
 # Initialize secrets if the file doesn't exist
-if [ ! -f ./config/secrets.yml ]; then
-  . ./scripts/generate_secrets.sh
-fi
+. ./scripts/generate_secrets.sh
 
 # Initialize database if it's required
 if [ ! -f ./tmp/db.sem ]; then
