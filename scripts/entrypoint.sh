@@ -1,12 +1,19 @@
 #!/bin/bash
 
 # Clean environment
-echo -e "\nCleaning environment"
-rm tmp/pids/server.pid # TODO: Move this pid to the /tmp folder of the container
+if [ -f ./tmp/pids/server.pid ]; then
+  echo -e "\nCleaning environment"
+  rm tmp/pids/server.pid
+fi
 
 # Install dependencies
 echo -e "\nChecking gems"
 bundle install --quiet
+
+# Initialize secrets if the file doesn't exist
+if [ ! -f ./config/secrets.yml ]; then
+  . ./scripts/generate_secrets.sh
+fi
 
 # Initialize database if it's required
 if [ ! -f ./tmp/db.sem ]; then
