@@ -26,7 +26,21 @@ ENV PATH=/opt/bitnami/node/bin:/opt/bitnami/python/bin:$PATH \
 
 ## STACKSMITH-END: Modifications below this line will be unchanged when regenerating
 
+# Add an user to prevent errors from npm install
+RUN useradd yoshi -m && \
+    sed -i -e 's/\s*Defaults\s*secure_path\s*=/# Defaults secure_path=/' /etc/sudoers && \
+    echo "yoshi ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+# Set the user
+USER yoshi
+
+# Entrypoint
+COPY ./scripts/entrypoint.sh /
+
 # Node base template
 WORKDIR /app/client
+
+# Set the entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["node"]
