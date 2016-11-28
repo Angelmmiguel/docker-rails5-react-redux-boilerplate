@@ -17,4 +17,4 @@ ReactDOM.render(
       <Route path="/" component={MyContainer}/>
     </Router>
   </Provider>,
-  document.getElementById('content'));
+  document.getElementById('app'));

@@ -1,5 +1,5 @@
-FROM ruby:latest
-MAINTAINER Angel M <angel@laux.es>
+FROM bitnami/ruby:2.3.1-r4
+MAINTAINER Angel
 
 # JS Runtime and pg dependencies
 RUN apt-get update && apt-get install -y nodejs libpq-dev

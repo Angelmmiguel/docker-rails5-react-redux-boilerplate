@@ -1,8 +1,20 @@
 version: '2'
 
 services:
+  nginx:
+    image: bitnami/nginx:1.10.2-r1
+    volumes:
+      - ./config/nginx:/bitnami/nginx/conf/vhosts
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      - VIRTUAL_HOST=yourproject.docker
+      - VIRTUAL_PORT=8080
+    ports:
+      - 8080:8080
   db:
-    image: bitnami/postgresql:latest
+    image: postgres:9.6.1-alpine
     environment:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=password123
@@ -10,12 +22,10 @@ services:
   backend:
     build: .
     command: rails s --binding=0.0.0.0
-    entrypoint: ./scripts/entrypoint.sh
+    entrypoint: ./scripts/backend_entrypoint.sh
     links:
       - db
       - frontend
-    ports:
-      - 3000:3000
     volumes:
       - ./:/app
     depends_on:
@@ -23,11 +33,9 @@ services:
       - frontend
   frontend:
     build: ./client
-    command: npm run dev
-    entrypoint: ./scripts/entrypoint.sh
+    command: npm start
+    entrypoint: ./scripts/frontend_entrypoint.sh
     volumes:
-      - ./:/app
-    ports:
-      - 8080:8080
+      - ./client:/app
     environment:
       NODE_ENV: development

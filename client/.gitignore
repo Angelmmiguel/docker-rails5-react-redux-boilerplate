@@ -6,3 +6,6 @@ npm-debug*
 /dist/*.css
 /dist/static/
 /dist/index.html
+
+# Vendor
+/vendor/vendor-manifest.json

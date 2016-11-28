@@ -1,73 +1,86 @@
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+/* eslint-env node, require */
+/* eslint no-console: ["error", { allow: ["info", "log"] }] */
+/* global require, module, __dirname, process, console */
 
-module.exports = {
-  context: path.join(__dirname, './src'),
-  entry: {
-    jsx: [
-      'webpack-dev-server/client?http://localhost:8080',
-      'webpack/hot/only-dev-server',
-      'whatwg-fetch',
-      './app.jsx'
-    ],
-    vendor: ['react']
-  },
-  output: {
-    path: path.join(__dirname, '../app/assets/javascripts'),
-    filename: 'bundle.js',
-    publicPath: 'http://localhost:8080/'
-  },
-  module: {
-    loaders: [
-      {
-        test: /\.(js|jsx)$/,
-        loaders: ['react-hot', 'babel-loader'],
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(scss|sass)$/,
-        loaders: ["style", "css", "sass"]
-      },
-      {
-        test: /static\/images\/\.(png)$/,
-        loader: "url-loader?name=/static/images/$1"
-      }
-    ],
-    noParse: ["react"]
-  },
-  resolve: {
-    extensions: ['', '.js', '.jsx'],
-    alias: {
-      'fetch': 'whatwg-fetch'
-    }
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js'),
-    new webpack.DefinePlugin({
-      'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development') }
-    }),
-    new HtmlWebpackPlugin({
-      title: 'React Boilerplate',
-      template: "index.html",
-      filename: "/app/public/index.html",
-      minify: false
-    })
-  ],
-  devServer: {
-    hot: true,
-    inline: false,
-    watchOptions: {
-      aggregateTimeout: 250,
-      poll: 50
-    },
-    watch: true,
-    noInfo: true,
-    noCredentials: true
-  },
-  devtool: 'source-map',
-  watchOptions: {
-    poll: 1000
+// Imports
+var path = require('path'),
+  // Bind join to the current path
+  join = path.join.bind(path, __dirname),
+  // Config to export
+  config;
+
+// Environment
+var NODE_ENV = process.env.NODE_ENV,
+  BUILD_DLL = process.env.BUILD_DLL;
+
+// Basic paths of the application
+var PATHS = {
+  src: path.join(__dirname, './src'),
+  build: path.join(__dirname, './dist'),
+  vendor: path.join(__dirname, './vendor')
+};
+
+/**
+ * Building the configuration!
+ * ------------------------------------
+ */
+if (BUILD_DLL === '1' || BUILD_DLL === 1) {
+  console.log('Building: DLL libraries for [' + NODE_ENV + ']');
+  // All the configuration for building DLL libraries is in the
+  // same file.
+  var dllConfig = require(join('./config/dll/webpack.dll.js'));
+  config = dllConfig(PATHS, join, NODE_ENV);
+} else {
+  // Build the main project
+  console.log('Building: Main project for [' + NODE_ENV + ']');
+
+  // Common blocks for every environment
+  var loaders = require(join('./config/loaders.js')),
+    plugins = require(join('./config/plugins.js')),
+    aliases = require(join('./config/aliases.js'));
+
+  // Set preferences based on the current environment
+  var pref;
+
+  if (NODE_ENV === 'production') {
+    pref = require(join('./config/environments/webpack.production.js'))(PATHS);
+  } else {
+    pref = require(join('./config/environments/webpack.development.js'))(PATHS);
   }
+
+  /**
+   * Prepare the configuration!
+   */
+  config = Object.assign(pref.config, {
+    // Base path for requires
+    context: PATHS.src,
+    // Output of the files
+    output: {
+      path: PATHS.build,
+      // This is copnfigurable based on the environment
+      filename: pref.filename,
+      publicPath: '/'
+    },
+    module: {
+      loaders: loaders(PATHS, join),
+      // Boost performance!
+      noParse: pref.noParse || [/path*/, /node-sass/]
+    },
+    // Apply the plugins based on the environment
+    plugins: plugins(PATHS, join).concat(pref.plugins || []),
+    // Require these file types without specifying the extension
+    resolve: {
+      root: path.resolve('./src'),
+      extensions: ['', '.js', '.jsx', '.sass'],
+      alias: aliases(join)
+    },
+    // Stats in the console.
+    stats: {
+      colors: true
+    }
+  });
 }
+
+// This configuration is based on the BUILD_DLL and NODE_ENV
+// env variables.
+module.exports = config;
